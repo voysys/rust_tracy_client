@@ -32,7 +32,7 @@
 //!
 //! [Tracy]: https://github.com/wolfpld/tracy
 
-use std::{fmt::Write, collections::VecDeque, cell::RefCell};
+use std::{cell::RefCell, collections::VecDeque, fmt::Write};
 use tracing_core::{
     field::{Field, Visit},
     span::Id,
@@ -43,7 +43,7 @@ use tracing_subscriber::{
     registry,
 };
 
-use tracy_client::{Span, color_message, message, finish_continuous_frame};
+use tracy_client::{color_message, finish_continuous_frame, message, Span};
 
 thread_local! {
     /// A stack of spans currently active on the current thread.
@@ -92,7 +92,7 @@ where
             TRACY_SPAN_STACK.with(|s| {
                 s.borrow_mut().push_back((
                     Span::new(metadata.name(), "", file, line, self.stack_depth),
-                    id.into_u64()
+                    id.into_u64(),
                 ));
             });
         }
@@ -178,8 +178,8 @@ impl Visit for TracyEventFieldVisitor {
 #[cfg(test)]
 mod tests {
     use futures::future::join_all;
+    use tracing::{debug, event, info, info_span, span, Level};
     use tracing_attributes::instrument;
-    use tracing::{debug, event, info, span, info_span, Level};
     use tracing_subscriber::layer::SubscriberExt;
 
     fn setup_subscriber() {
@@ -220,9 +220,7 @@ mod tests {
         span.in_scope(|| {});
 
         let span = span!(Level::INFO, "multiple_entries 2");
-        span.in_scope(|| {
-            span.in_scope(|| {})
-        });
+        span.in_scope(|| span.in_scope(|| {}));
     }
 
     #[test]

@@ -33,3 +33,6 @@ noexit = []
 # Enable on-demand mode. Traces are only collected when a server connects to the client.
 # Also makes it possible to repeatedly re-connect to a client.
 ondemand = []
+# Don't build our own Tracy library, just try to link to an existing one. This is required to support,
+# projects with multiple DLLs/shared objects
+use-external-tracy-library = []

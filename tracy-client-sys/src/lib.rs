@@ -14,12 +14,12 @@
 //! the `enable` feature flag provided by this crate.
 #![allow(non_snake_case, non_camel_case_types, unused_variables)]
 
-#[cfg(feature="enable")]
+#[cfg(feature = "enable")]
 mod generated;
-#[cfg(feature="enable")]
+#[cfg(feature = "enable")]
 pub use generated::*;
 
-#[cfg(all(feature="enable", test))]
+#[cfg(all(feature = "enable", test))]
 mod tests {
     use super::*;
     #[test]
