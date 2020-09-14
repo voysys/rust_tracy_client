@@ -4,7 +4,9 @@ fn link_libraries(target_os: &str) {
     match target_os {
         "linux" | "android" => println!("cargo:rustc-link-lib=dl"),
         "freebsd" | "dragonfly" => println!("cargo:rustc-link-lib=c"),
-        "windows" => println!("cargo:rustc-link-lib=user32"),
+        "windows" => {
+            println!("cargo:rustc-link-lib=user32");
+        },
         _ => {}
     }
 }
@@ -22,19 +24,23 @@ fn set_feature_defines(mut c: cc::Build) -> cc::Build {
     if std::env::var_os("CARGO_FEATURE_NOEXIT").is_some() {
         c.define("TRACY_NO_EXIT", None);
     }
+    if std::env::var_os("CARGO_FEATURE_IMPORTS").is_some() {
+        c.define("TRACY_IMPORTS", None);
+    }
     c
 }
 
-
 fn main() {
-    if std::env::var_os("CARGO_FEATURE_ENABLE").is_some() {
-        set_feature_defines(cc::Build::new())
-            .file("tracy/TracyClient.cpp")
-            .warnings(false)
-            .cpp(true)
-            .flag_if_supported("-std=gnu++17")
-            .compile("libtracy-client.a");
-    }
+    // if std::env::var_os("CARGO_FEATURE_ENABLE").is_some() {
+    //     set_feature_defines(cc::Build::new())
+    //         .file("tracy/TracyClient.cpp")
+    //         .warnings(false)
+    //         .cpp(true)
+    //         .flag_if_supported("-std=gnu++17")
+    //         .compile("libtracy-client.a");
+    // }
+
+    println!("cargo:rustc-link-search=C:/dev/Oden/thirdparty/lib/windows/x86_64/tracy");
 
     match std::env::var("CARGO_CFG_TARGET_OS") {
         Ok(target_os) => {
